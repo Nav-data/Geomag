@@ -1,6 +1,6 @@
 # GeoMag - World Magnetic Model (WMM) C Library
 
-A high-performance C implementation of the World Magnetic Model (WMM), ported from the [pygeomag](https://github.com/boxpet/pygeomag) Python library. This library provides fast, accurate calculations of Earth's magnetic field components for navigation, attitude, and heading referencing systems.
+A high-performance C implementation of the World Magnetic Model (WMM). This library provides fast, accurate calculations of Earth's magnetic field components for navigation, attitude, and heading referencing systems.
 
 ## What is Magnetic Declination?
 

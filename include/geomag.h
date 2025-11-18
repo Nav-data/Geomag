@@ -8,7 +8,7 @@
  * The World Magnetic Model (WMM) is the standard model for navigation,
  * attitude, and heading referencing systems using the geomagnetic field.
  *
- * @author Port to optimized C
+ * @author Justin
  * @date 2025
  */
 

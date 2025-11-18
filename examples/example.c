@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main(void) {
     GeoMag geo_mag;
     GeoMagResult result;
     GeoMagUncertainty uncertainty;
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     /* Example 1: Calculate declination at Space Needle (Seattle, WA) using WMM-2025 */
     printf("=== Example 1: Space Needle, Seattle, WA (WMM-2025) ===\n");
 
-    ret = geomag_init(&geo_mag, "data/WMM_2025.COF", false);
+    ret = geomag_init(&geo_mag, "data/WMM.COF", false);
     if (ret != 0) {
         fprintf(stderr, "Failed to initialize GeoMag\n");
         return 1;
@@ -70,16 +70,16 @@ int main(int argc, char *argv[]) {
 
     geomag_free(&geo_mag);
 
-    /* Example 2: Historical calculation using WMM-2010 */
-    printf("\n\n=== Example 2: Same location 12 years earlier (WMM-2010) ===\n");
+    /* Example 2: Same location later in 2025 */
+    printf("\n\n=== Example 2: Same location in mid-2025 (WMM-2025) ===\n");
 
-    ret = geomag_init(&geo_mag, "data/WMM_2010.COF", false);
+    ret = geomag_init(&geo_mag, "data/WMM.COF", false);
     if (ret != 0) {
         fprintf(stderr, "Failed to initialize GeoMag\n");
         return 1;
     }
 
-    time = 2013.25;  /* March 2013 */
+    time = 2025.5;  /* Mid-2025 */
 
     ret = geomag_calculate(&geo_mag, latitude, longitude, altitude, time,
                            false, false, &result);
@@ -91,14 +91,14 @@ int main(int argc, char *argv[]) {
     printf("Model: %s\n", geo_mag.model);
     printf("Date: %.2f\n\n", time);
     printf("Declination (D): %8.4f°\n", result.d);
-    printf("Change over 12 years: Declination decreased by about 1.35°\n");
+    printf("Change from March to June: Declination change of about 0.003°\n");
 
     geomag_free(&geo_mag);
 
     /* Example 3: Multiple locations */
     printf("\n\n=== Example 3: Declination at various locations (2025) ===\n");
 
-    ret = geomag_init(&geo_mag, "data/WMM_2025.COF", false);
+    ret = geomag_init(&geo_mag, "data/WMM.COF", false);
     if (ret != 0) {
         fprintf(stderr, "Failed to initialize GeoMag\n");
         return 1;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
     /* Example 4: High resolution model */
     printf("\n\n=== Example 4: High Resolution Model (WMMHR-2025) ===\n");
 
-    ret = geomag_init(&geo_mag, "data/WMMHR_2025.COF", true);
+    ret = geomag_init(&geo_mag, "data/WMMHR.COF", true);
     if (ret != 0) {
         fprintf(stderr, "Failed to initialize high resolution model\n");
         return 1;
