@@ -21,13 +21,24 @@ OBJS = $(BUILD_DIR)/geomag.o
 
 # Targets
 LIBRARY = $(BUILD_DIR)/libgeomag.a
+SHARED_LIBRARY = $(BUILD_DIR)/libgeomag.so
 EXAMPLE = $(BUILD_DIR)/example
 TEST = $(BUILD_DIR)/test_geomag
 BENCHMARK = $(BUILD_DIR)/benchmark
 
+# Platform-specific shared library settings
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    SHARED_LIBRARY = $(BUILD_DIR)/libgeomag.dylib
+    SHARED_FLAGS = -dynamiclib
+else
+    SHARED_LIBRARY = $(BUILD_DIR)/libgeomag.so
+    SHARED_FLAGS = -shared
+endif
+
 # Default target
 .PHONY: all
-all: $(LIBRARY) $(EXAMPLE)
+all: $(LIBRARY) $(SHARED_LIBRARY) $(EXAMPLE)
 
 # Create build directory
 $(BUILD_DIR):
@@ -35,12 +46,17 @@ $(BUILD_DIR):
 
 # Build object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INC_DIR)/geomag.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 # Build static library
 $(LIBRARY): $(OBJS)
 	@echo "Creating static library: $@"
 	ar rcs $@ $^
+
+# Build shared library
+$(SHARED_LIBRARY): $(OBJS)
+	@echo "Creating shared library: $@"
+	$(CC) $(SHARED_FLAGS) -o $@ $^ $(LDFLAGS)
 
 # Build example program
 $(EXAMPLE): $(EXAMPLE_DIR)/example.c $(LIBRARY)
