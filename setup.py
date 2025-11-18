@@ -15,8 +15,19 @@ class MakeExtension(build_ext):
     def run(self):
         """Build the C library using Make."""
         try:
+            # Clean only our library build artifacts, not the entire build directory
+            lib_name = self._get_library_name()
+            lib_path = Path('build') / lib_name
+            obj_path = Path('build') / 'geomag.o'
+            static_lib = Path('build') / 'libgeomag.a'
+            example = Path('build') / 'example'
+            
+            # Remove only our specific build artifacts
+            for path in [lib_path, obj_path, static_lib, example]:
+                if path.exists():
+                    path.unlink()
+            
             # Run make to build the shared library
-            subprocess.check_call(['make', 'clean'])
             subprocess.check_call(['make'])
         except subprocess.CalledProcessError as e:
             sys.stderr.write(f"Error building C library: {e}\n")
@@ -68,7 +79,6 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License',
         'Programming Language :: C',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',

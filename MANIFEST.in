@@ -1,6 +1,7 @@
 include README.md
 include LICENSE
 include Makefile
+include dummy.c
 recursive-include include *.h
 recursive-include src *.c
 recursive-include data *.COF
