@@ -42,6 +42,9 @@ make run-example
 
 # Run tests
 make test
+
+# Run benchmark
+make benchmark
 ```
 
 ## Performance

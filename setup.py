@@ -92,6 +92,6 @@ setup(
     },
     include_package_data=True,
     # We don't actually build a Python extension, but we need this to trigger build_ext
-    ext_modules=[Extension('geomag._dummy', sources=[])],
+    ext_modules=[Extension('geomag._dummy', sources=['dummy.c'])],
     zip_safe=False,
 )
