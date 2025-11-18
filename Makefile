@@ -11,6 +11,7 @@ SRC_DIR = src
 INC_DIR = include
 EXAMPLE_DIR = examples
 TEST_DIR = test
+BENCHMARK_DIR = benchmark
 BUILD_DIR = build
 DATA_DIR = data
 
@@ -22,6 +23,7 @@ OBJS = $(BUILD_DIR)/geomag.o
 LIBRARY = $(BUILD_DIR)/libgeomag.a
 EXAMPLE = $(BUILD_DIR)/example
 TEST = $(BUILD_DIR)/test_geomag
+BENCHMARK = $(BUILD_DIR)/benchmark
 
 # Default target
 .PHONY: all
@@ -50,6 +52,11 @@ $(TEST): $(TEST_DIR)/test_geomag.c $(LIBRARY)
 	@echo "Building test: $@"
 	$(CC) $(CFLAGS) $< -L$(BUILD_DIR) -lgeomag $(LDFLAGS) -o $@
 
+# Build benchmark program
+$(BENCHMARK): $(BENCHMARK_DIR)/benchmark.c $(LIBRARY)
+	@echo "Building benchmark: $@"
+	$(CC) $(CFLAGS) $< -L$(BUILD_DIR) -lgeomag $(LDFLAGS) -o $@
+
 # Run example
 .PHONY: run-example
 run-example: $(EXAMPLE)
@@ -61,6 +68,12 @@ run-example: $(EXAMPLE)
 test: $(TEST)
 	@echo "Running tests..."
 	@./$(TEST)
+
+# Run benchmark
+.PHONY: benchmark
+benchmark: $(BENCHMARK)
+	@echo "Running benchmark..."
+	@./$(BENCHMARK)
 
 # Clean build artifacts
 .PHONY: clean
@@ -94,6 +107,7 @@ help:
 	@echo "  clean        - Remove build artifacts"
 	@echo "  run-example  - Build and run the example program"
 	@echo "  test         - Build and run tests"
+	@echo "  benchmark    - Build and run performance benchmarks"
 	@echo "  install      - Install library to /usr/local (requires sudo)"
 	@echo "  uninstall    - Uninstall library from /usr/local (requires sudo)"
 	@echo "  help         - Show this help message"
