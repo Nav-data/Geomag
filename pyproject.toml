@@ -43,4 +43,4 @@ license-files = []
 include = ["geomag_c*"]
 
 [tool.setuptools.package-data]
-geomag_c = ["*.so", "*.dylib", "*.dll"]
+geomag_c = ["*.so", "*.dylib", "*.dll", "data/*.COF"]

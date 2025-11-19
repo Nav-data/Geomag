@@ -143,10 +143,14 @@ class GeoMag:
     This class provides a high-level interface to the WMM C library for calculating
     Earth's magnetic field components at any location and time.
 
-    Example:
-        >>> gm = GeoMag('data/WMM.COF')
+    Examples:
+        >>> # Use bundled standard WMM model (most common)
+        >>> gm = GeoMag()
         >>> result = gm.calculate(lat=47.6205, lon=-122.3493, alt=0, time=2025.5)
         >>> print(f"Declination: {result.declination:.2f}°")
+        >>>
+        >>> # Use bundled high-resolution model
+        >>> gm_hr = GeoMag(high_resolution=True)
     """
 
     _lib = None
@@ -178,22 +182,46 @@ class GeoMag:
             "Please build the library first with 'make' or install the package."
         )
 
-    def __init__(self, coefficients_file: str, high_resolution: bool = False):
+    def __init__(self, coefficients_file: str = None, high_resolution: bool = False):
         """Initialize a GeoMag model.
 
         Args:
-            coefficients_file: Path to the WMM coefficient file (.COF)
-            high_resolution: Use high resolution model (133 degrees) if True
+            coefficients_file: Optional path to a WMM coefficient file (.COF).
+                              If None, uses bundled WMM.COF (standard) or WMMHR.COF (high-res).
+            high_resolution: Use high resolution model (133 degrees) if True.
+                           Only used when coefficients_file is None.
 
         Raises:
             RuntimeError: If initialization fails
+            FileNotFoundError: If coefficient file not found
+
+        Examples:
+            >>> # Use bundled standard model (most common)
+            >>> gm = GeoMag()
+            >>>
+            >>> # Use bundled high-resolution model
+            >>> gm_hr = GeoMag(high_resolution=True)
+            >>>
+            >>> # Use custom coefficient file
+            >>> gm_custom = GeoMag('path/to/custom.COF')
         """
         self._lib = self._load_library()
         self._geo_mag = _GeoMagInternal()  # Allocate proper structure
 
+        # If no file specified, use bundled data files
+        if coefficients_file is None:
+            package_dir = Path(__file__).parent
+            if high_resolution:
+                coefficients_file = str(package_dir / "data" / "WMMHR.COF")
+            else:
+                coefficients_file = str(package_dir / "data" / "WMM.COF")
+
         # Convert path to bytes
         if not os.path.exists(coefficients_file):
-            raise FileNotFoundError(f"Coefficients file not found: {coefficients_file}")
+            raise FileNotFoundError(
+                f"Coefficients file not found: {coefficients_file}\n"
+                f"If using bundled data, ensure the package is installed correctly."
+            )
 
         coef_file_bytes = coefficients_file.encode("utf-8")
 

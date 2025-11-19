@@ -100,6 +100,7 @@ setup(
             "*.so",
             "*.dylib",
             "*.dll",
+            "data/*.COF",
         ],
     },
     include_package_data=True,

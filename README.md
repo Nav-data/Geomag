@@ -70,38 +70,38 @@ pip install .
 ```python
 from geomag_c import GeoMag
 
-# Initialize with a model (WMM2025 or WMMHR2025)
-gm = GeoMag(model='WMM2025')
+# Initialize with bundled WMM-2025 model (no file path needed!)
+gm = GeoMag()
 
 # Calculate magnetic field for a location
-# Parameters: latitude, longitude, altitude_km, decimal_year
+# Parameters: lat, lon, alt (km), time (decimal year)
 result = gm.calculate(
-    latitude=47.6062,      # Seattle latitude
-    longitude=-122.3321,   # Seattle longitude
-    altitude_km=0.0,       # Sea level
-    decimal_year=2025.5    # Mid-2025
+    lat=47.6062,      # Seattle latitude
+    lon=-122.3321,    # Seattle longitude
+    alt=0.0,          # Sea level
+    time=2025.5       # Mid-2025
 )
 
 # Access magnetic field components
-print(f"Declination: {result['declination']:.2f}°")  # Angle from true north
-print(f"Inclination: {result['inclination']:.2f}°")  # Dip angle
-print(f"Intensity: {result['total_intensity']:.2f} nT")  # Total field strength
+print(f"Declination: {result.declination:.2f}°")  # Angle from true north
+print(f"Inclination: {result.inclination:.2f}°")  # Dip angle
+print(f"Total Intensity: {result.total_intensity:.2f} nT")  # Total field strength
 
 # Vector components (in nanoTeslas)
-print(f"North component: {result['north']:.2f} nT")
-print(f"East component: {result['east']:.2f} nT")
-print(f"Down component: {result['down']:.2f} nT")
-print(f"Horizontal intensity: {result['horizontal_intensity']:.2f} nT")
+print(f"North component: {result.north_component:.2f} nT")
+print(f"East component: {result.east_component:.2f} nT")
+print(f"Vertical component: {result.vertical_component:.2f} nT")
+print(f"Horizontal intensity: {result.horizontal_intensity:.2f} nT")
 ```
 
 ### High Resolution Model
 
 ```python
-# Use the high-resolution model for more accurate results
+# Use the bundled high-resolution model for more accurate results
 from geomag_c import GeoMag
 
-gm_hr = GeoMag(model='WMMHR2025')
-result = gm_hr.calculate(47.6062, -122.3321, 0.0, 2025.5)
+gm_hr = GeoMag(high_resolution=True)
+result = gm_hr.calculate(lat=47.6062, lon=-122.3321, alt=0.0, time=2025.5)
 ```
 
 ### Uncertainty Estimates
@@ -110,12 +110,13 @@ result = gm_hr.calculate(47.6062, -122.3321, 0.0, 2025.5)
 # Get uncertainty values for the calculations
 from geomag_c import GeoMag
 
-gm = GeoMag(model='WMM2025')
-result = gm.calculate(47.6062, -122.3321, 0.0, 2025.5)
+gm = GeoMag()
+result = gm.calculate(lat=47.6062, lon=-122.3321, alt=0.0, time=2025.5)
+uncertainty = gm.calculate_uncertainty(result)
 
-print(f"Declination uncertainty: ±{result['declination_uncertainty']:.2f}°")
-print(f"Inclination uncertainty: ±{result['inclination_uncertainty']:.2f}°")
-print(f"Intensity uncertainty: ±{result['total_intensity_uncertainty']:.0f} nT")
+print(f"Declination uncertainty: ±{uncertainty.d:.2f}°")
+print(f"Inclination uncertainty: ±{uncertainty.i:.2f}°")
+print(f"Total intensity uncertainty: ±{uncertainty.f:.0f} nT")
 ```
 
 ### Warning Zones
@@ -125,17 +126,25 @@ The library automatically detects problematic regions near magnetic poles:
 ```python
 from geomag_c import GeoMag
 
-gm = GeoMag(model='WMM2025')
-result = gm.calculate(85.0, 0.0, 0.0, 2025.5)  # Near North Pole
+gm = GeoMag()
+result = gm.calculate(lat=85.0, lon=0.0, alt=0.0, time=2025.5)  # Near North Pole
 
-if result['warning']:
-    print(f"Warning: {result['warning']}")  # e.g., "Blackout zone" or "Caution zone"
+if result.in_blackout_zone:
+    print("Warning: Blackout zone - compass unreliable (H < 2000 nT)")
+elif result.in_caution_zone:
+    print("Warning: Caution zone - compass less reliable (2000 <= H < 6000 nT)")
 ```
 
 ### Available Models
 
-- **WMM2025**: Current standard model (valid 2025-2030)
-- **WMMHR2025**: High-resolution model with 133 spherical harmonic degrees
+Both models are bundled with the package - no need to download or specify file paths!
+
+- **WMM-2025**: Current standard model with 12 degrees (default)
+  - Usage: `GeoMag()` or `GeoMag(high_resolution=False)`
+- **WMMHR-2025**: High-resolution model with 133 degrees
+  - Usage: `GeoMag(high_resolution=True)`
+- **Custom models**: You can still load custom coefficient files
+  - Usage: `GeoMag('path/to/custom.COF')`
 
 ## Performance
 
@@ -187,25 +196,37 @@ See the C library documentation for more details.
 
 ## Output Components
 
-The `calculate()` method returns a dictionary with the following fields:
+The `calculate()` method returns a `GeoMagResult` object with the following attributes:
+
+### Main Result Fields
 
 | Field | Description | Units |
 |-------|-------------|-------|
-| `declination` | Angle between magnetic north and true north | degrees |
-| `inclination` | Dip angle (positive downward) | degrees |
-| `total_intensity` | Total magnetic field strength | nanoTeslas (nT) |
-| `horizontal_intensity` | Horizontal component magnitude | nT |
-| `north` | North component (X) | nT |
-| `east` | East component (Y) | nT |
-| `down` | Vertical component (Z, positive downward) | nT |
-| `declination_uncertainty` | Uncertainty in declination | degrees |
-| `inclination_uncertainty` | Uncertainty in inclination | degrees |
-| `total_intensity_uncertainty` | Uncertainty in total intensity | nT |
-| `horizontal_intensity_uncertainty` | Uncertainty in horizontal intensity | nT |
-| `north_uncertainty` | Uncertainty in north component | nT |
-| `east_uncertainty` | Uncertainty in east component | nT |
-| `down_uncertainty` | Uncertainty in down component | nT |
-| `warning` | Warning message (if applicable) | string or None |
+| `declination` or `d` | Angle between magnetic north and true north | degrees |
+| `inclination` or `i` | Dip angle (positive downward) | degrees |
+| `total_intensity` or `f` | Total magnetic field strength | nanoTeslas (nT) |
+| `horizontal_intensity` or `h` | Horizontal component magnitude | nT |
+| `north_component` or `x` | North component (X) | nT |
+| `east_component` or `y` | East component (Y) | nT |
+| `vertical_component` or `z` | Vertical component (Z, positive downward) | nT |
+| `gv` | Grid variation | degrees |
+| `in_blackout_zone` | True if H < 2000 nT | boolean |
+| `in_caution_zone` | True if 2000 <= H < 6000 nT | boolean |
+| `is_high_resolution` | True if using high-res model | boolean |
+
+### Uncertainty Fields
+
+The `calculate_uncertainty()` method returns a `GeoMagUncertainty` object:
+
+| Field | Description | Units |
+|-------|-------------|-------|
+| `d` | Uncertainty in declination | degrees |
+| `i` | Uncertainty in inclination | degrees |
+| `f` | Uncertainty in total intensity | nT |
+| `h` | Uncertainty in horizontal intensity | nT |
+| `x` | Uncertainty in north component | nT |
+| `y` | Uncertainty in east component | nT |
+| `z` | Uncertainty in vertical component | nT |
 
 ## Coordinate System
 

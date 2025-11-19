@@ -8,7 +8,8 @@ def main():
     # Example 1: Calculate declination at Space Needle (Seattle, WA) using WMM-2025
     print("=== Example 1: Space Needle, Seattle, WA (WMM-2025) ===")
 
-    gm = GeoMag("data/WMM.COF")
+    # No file path needed - uses bundled data!
+    gm = GeoMag()
     print(f"Model: {gm.model}")
     print(f"Epoch: {gm.epoch}")
     print(f"Release Date: {gm.release_date}")
@@ -71,7 +72,8 @@ def main():
     # Example 3: High resolution model
     print("\n\n=== Example 3: High Resolution Model (WMMHR-2025) ===")
 
-    gm_hr = GeoMag("data/WMMHR.COF", high_resolution=True)
+    # Simply set high_resolution=True to use the bundled high-res model
+    gm_hr = GeoMag(high_resolution=True)
     print(f"Model: {gm_hr.model} (High Resolution, {gm_hr.maxord} degrees)")
 
     time = 2025.0

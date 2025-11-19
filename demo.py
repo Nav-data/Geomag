@@ -27,7 +27,7 @@ def demo_basic_usage():
     print_section("1. Basic Usage - Calculate Magnetic Declination")
 
     # Initialize with WMM-2025 model
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
     print("Model Information:")
     print(f"  Name:         {gm.model}")
     print(f"  Epoch:        {gm.epoch}")
@@ -82,7 +82,7 @@ def demo_uncertainty():
     """Demonstrate uncertainty calculations."""
     print_section("2. Uncertainty Estimation")
 
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
 
     # New York City
     result = gm.calculate(lat=40.7128, lon=-74.0060, alt=0.0, time=2025.5)
@@ -107,7 +107,7 @@ def demo_world_locations():
     """Demonstrate calculations at various locations around the world."""
     print_section("3. Magnetic Field Around the World")
 
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
     time = 2025.5  # Mid-2025
 
     locations = [
@@ -140,7 +140,7 @@ def demo_altitude_effects():
     """Demonstrate how altitude affects magnetic field."""
     print_section("4. Altitude Effects on Magnetic Field")
 
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
 
     # Mount Everest location
     latitude = 27.9881
@@ -173,7 +173,7 @@ def demo_time_series():
     """Demonstrate temporal variation of magnetic field."""
     print_section("5. Temporal Variation (Secular Variation)")
 
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
 
     # Seattle, WA - Space Needle
     latitude = 47.6205
@@ -234,10 +234,10 @@ def demo_high_resolution():
     print_section("6. High-Resolution Model Comparison")
 
     # Standard model (12 degrees)
-    gm_std = GeoMag("data/WMM.COF", high_resolution=False)
+    gm_std = GeoMag(high_resolution=False)
 
     # High-resolution model (133 degrees)
-    gm_hr = GeoMag("data/WMMHR.COF", high_resolution=True)
+    gm_hr = GeoMag(high_resolution=True)
 
     print("Model Comparison:")
     print(f"  Standard Model: {gm_std.model} ({gm_std.maxord} degrees)")
@@ -276,7 +276,7 @@ def demo_warning_zones():
     """Demonstrate warning zones near magnetic poles."""
     print_section("7. Warning Zones (Blackout and Caution Zones)")
 
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
     time = 2025.5
 
     locations = [
@@ -321,7 +321,7 @@ def demo_compass_calibration():
     """Demonstrate practical compass calibration."""
     print_section("8. Practical Application - Compass Calibration")
 
-    gm = GeoMag("data/WMM.COF")
+    gm = GeoMag()
     time = 2025.5
 
     print("Common US Cities - Compass Correction Reference:\n")
