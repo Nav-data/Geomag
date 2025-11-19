@@ -36,7 +36,7 @@ class MakeExtension(build_ext):
         # Copy the shared library to the package directory
         lib_name = self._get_library_name()
         src_lib = Path('build') / lib_name
-        dst_lib = Path('geomag') / lib_name
+        dst_lib = Path('geomag_c') / lib_name
 
         if not src_lib.exists():
             sys.stderr.write(f"Library not found: {src_lib}\n")
@@ -74,7 +74,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/Nav-data/Geomag',
-    packages=['geomag'],
+    packages=['geomag_c'],
     python_requires='>=3.7',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -96,7 +96,7 @@ setup(
     cmdclass={'build_ext': MakeExtension},
     # Include the data files
     package_data={
-        'geomag': [
+        'geomag_c': [
             '*.so',
             '*.dylib',
             '*.dll',
@@ -104,6 +104,6 @@ setup(
     },
     include_package_data=True,
     # We don't actually build a Python extension, but we need this to trigger build_ext
-    ext_modules=[Extension('geomag._dummy', sources=['dummy.c'])],
+    ext_modules=[Extension('geomag_c._dummy', sources=['dummy.c'])],
     zip_safe=False,
 )

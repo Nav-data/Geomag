@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Example usage of the geomag Python package."""
+"""Example usage of the geomag_c Python package."""
 
-from geomag import GeoMag
+from geomag_c import GeoMag
 
 
 def main():

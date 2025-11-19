@@ -40,7 +40,7 @@ include-package-data = true
 license-files = []
 
 [tool.setuptools.packages.find]
-include = ["geomag*"]
+include = ["geomag_c*"]
 
 [tool.setuptools.package-data]
-geomag = ["*.so", "*.dylib", "*.dll"]
+geomag_c = ["*.so", "*.dylib", "*.dll"]

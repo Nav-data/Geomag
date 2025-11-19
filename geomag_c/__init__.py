@@ -1,11 +1,11 @@
-"""GeoMag - World Magnetic Model (WMM) Python Library
+"""GeoMag-C - World Magnetic Model (WMM) Python Library
 
 A high-performance Python wrapper around the C implementation of the World Magnetic Model (WMM).
 Provides fast, accurate calculations of Earth's magnetic field components for navigation,
 attitude, and heading referencing systems.
 
 Example:
-    >>> from geomag import GeoMag
+    >>> from geomag_c import GeoMag
     >>>
     >>> # Initialize with WMM-2025 model
     >>> gm = GeoMag('data/WMM.COF')
