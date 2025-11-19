@@ -3,16 +3,16 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "geomag"
+name = "geomag-c"
 version = "1.0.0"
-description = "High-performance World Magnetic Model (WMM) calculator"
+description = "High-performance World Magnetic Model (WMM) calculator with C backend"
 readme = "README.md"
 requires-python = ">=3.7"
-license = "MIT"
+license = {text = "MIT"}
 authors = [
-    {name = "Justin"},
+    {name = "Justin", email = "epa6643@gmail.com"},
 ]
-keywords = ["magnetic", "declination", "wmm", "navigation", "compass", "gis"]
+keywords = ["magnetic", "declination", "wmm", "navigation", "compass", "gis", "geomag", "performance"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -30,12 +30,14 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/geomag"
-"Bug Tracker" = "https://github.com/yourusername/geomag/issues"
+Homepage = "https://github.com/Nav-data/Geomag"
+"Bug Tracker" = "https://github.com/Nav-data/Geomag/issues"
+Repository = "https://github.com/Nav-data/Geomag"
 
 [tool.setuptools]
 zip-safe = false
 include-package-data = true
+license-files = []
 
 [tool.setuptools.packages.find]
 include = ["geomag*"]

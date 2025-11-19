@@ -114,14 +114,20 @@ class GeoMagUncertainty(ctypes.Structure):
 
 class _GeoMagInternal(ctypes.Structure):
     """Internal C structure - not exposed to users."""
+    WMM_MAX_SIZE = 134
     _fields_ = [
         ('maxord', ctypes.c_int),
         ('size', ctypes.c_int),
         ('epoch', ctypes.c_double),
         ('model', ctypes.c_char * 32),
         ('release_date', ctypes.c_char * 16),
-        # Note: We don't need to define the full coefficient arrays
-        # since we only pass pointers to the C library
+        # Full coefficient arrays - required for proper memory allocation
+        ('c', ctypes.c_double * WMM_MAX_SIZE * WMM_MAX_SIZE),
+        ('cd', ctypes.c_double * WMM_MAX_SIZE * WMM_MAX_SIZE),
+        ('k', ctypes.c_double * WMM_MAX_SIZE * WMM_MAX_SIZE),
+        ('fn', ctypes.c_double * WMM_MAX_SIZE),
+        ('fm', ctypes.c_double * WMM_MAX_SIZE),
+        ('p', ctypes.c_double * (WMM_MAX_SIZE * WMM_MAX_SIZE)),
     ]
 
 
@@ -177,7 +183,7 @@ class GeoMag:
             RuntimeError: If initialization fails
         """
         self._lib = self._load_library()
-        self._geo_mag = ctypes.create_string_buffer(10000)  # Allocate enough space
+        self._geo_mag = _GeoMagInternal()  # Allocate proper structure
 
         # Convert path to bytes
         if not os.path.exists(coefficients_file):
@@ -186,7 +192,7 @@ class GeoMag:
         coef_file_bytes = coefficients_file.encode('utf-8')
 
         ret = self._lib.geomag_init(
-            self._geo_mag,
+            ctypes.byref(self._geo_mag),
             coef_file_bytes,
             high_resolution
         )
@@ -194,12 +200,11 @@ class GeoMag:
         if ret != 0:
             raise RuntimeError(f"Failed to initialize GeoMag from {coefficients_file}")
 
-        # Extract model info
-        geo_mag_struct = _GeoMagInternal.from_buffer_copy(self._geo_mag)
-        self.model = geo_mag_struct.model.decode('utf-8')
-        self.epoch = geo_mag_struct.epoch
-        self.release_date = geo_mag_struct.release_date.decode('utf-8')
-        self.maxord = geo_mag_struct.maxord
+        # Extract model info directly from the structure
+        self.model = self._geo_mag.model.decode('utf-8')
+        self.epoch = self._geo_mag.epoch
+        self.release_date = self._geo_mag.release_date.decode('utf-8')
+        self.maxord = self._geo_mag.maxord
 
     def calculate(
         self,
@@ -229,7 +234,7 @@ class GeoMag:
         result = GeoMagResult()
 
         ret = self._lib.geomag_calculate(
-            self._geo_mag,
+            ctypes.byref(self._geo_mag),
             ctypes.c_double(lat),
             ctypes.c_double(lon),
             ctypes.c_double(alt),
@@ -274,9 +279,9 @@ class GeoMag:
 
     def __del__(self):
         """Clean up resources."""
-        if hasattr(self, '_lib') and self._lib is not None:
+        if hasattr(self, '_lib') and self._lib is not None and hasattr(self, '_geo_mag'):
             try:
-                self._lib.geomag_free(self._geo_mag)
+                self._lib.geomag_free(ctypes.byref(self._geo_mag))
             except:
                 pass
 
@@ -329,7 +334,7 @@ def _setup_library_functions(lib):
     """Set up function signatures for the C library."""
     # geomag_init
     lib.geomag_init.argtypes = [
-        ctypes.c_void_p,  # geo_mag
+        ctypes.POINTER(_GeoMagInternal),  # geo_mag
         ctypes.c_char_p,  # coefficients_file
         ctypes.c_bool,    # high_resolution
     ]
@@ -337,7 +342,7 @@ def _setup_library_functions(lib):
 
     # geomag_calculate
     lib.geomag_calculate.argtypes = [
-        ctypes.c_void_p,    # geo_mag
+        ctypes.POINTER(_GeoMagInternal),  # geo_mag
         ctypes.c_double,    # glat
         ctypes.c_double,    # glon
         ctypes.c_double,    # alt
@@ -356,5 +361,5 @@ def _setup_library_functions(lib):
     lib.geomag_calculate_uncertainty.restype = ctypes.c_int
 
     # geomag_free
-    lib.geomag_free.argtypes = [ctypes.c_void_p]
+    lib.geomag_free.argtypes = [ctypes.POINTER(_GeoMagInternal)]
     lib.geomag_free.restype = None

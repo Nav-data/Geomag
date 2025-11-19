@@ -66,10 +66,11 @@ with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='geomag',
+    name='geomag-c',
     version='1.0.0',
     author='Justin',
-    description='High-performance World Magnetic Model (WMM) calculator',
+    author_email='epa6643@gmail.com',
+    description='High-performance World Magnetic Model (WMM) calculator with C backend',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/Nav-data/Geomag',
@@ -91,6 +92,7 @@ setup(
         'Topic :: Scientific/Engineering :: Physics',
     ],
     keywords='magnetic declination wmm navigation compass gis',
+    license='MIT',
     cmdclass={'build_ext': MakeExtension},
     # Include the data files
     package_data={

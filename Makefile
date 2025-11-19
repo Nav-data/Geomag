@@ -38,7 +38,7 @@ endif
 
 # Default target
 .PHONY: all
-all: $(LIBRARY) $(SHARED_LIBRARY) $(EXAMPLE)
+all: $(LIBRARY) $(SHARED_LIBRARY)
 
 # Create build directory
 $(BUILD_DIR):
