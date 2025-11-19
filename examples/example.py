@@ -8,17 +8,17 @@ def main():
     # Example 1: Calculate declination at Space Needle (Seattle, WA) using WMM-2025
     print("=== Example 1: Space Needle, Seattle, WA (WMM-2025) ===")
 
-    gm = GeoMag('data/WMM.COF')
+    gm = GeoMag("data/WMM.COF")
     print(f"Model: {gm.model}")
     print(f"Epoch: {gm.epoch}")
     print(f"Release Date: {gm.release_date}")
     print()
 
     # Space Needle coordinates
-    latitude = 47.6205   # North
+    latitude = 47.6205  # North
     longitude = -122.3493  # West
-    altitude = 0.0       # Sea level
-    time = 2025.25       # March 2025
+    altitude = 0.0  # Sea level
+    time = 2025.25  # March 2025
 
     result = gm.calculate(lat=latitude, lon=longitude, alt=altitude, time=time)
 
@@ -64,12 +64,14 @@ def main():
 
     for name, lat, lon in locations:
         result = gm.calculate(lat=lat, lon=lon, alt=0.0, time=time)
-        print(f"  {name:20s}: D={result.declination:7.2f}°, I={result.inclination:6.2f}°")
+        print(
+            f"  {name:20s}: D={result.declination:7.2f}°, I={result.inclination:6.2f}°"
+        )
 
     # Example 3: High resolution model
     print("\n\n=== Example 3: High Resolution Model (WMMHR-2025) ===")
 
-    gm_hr = GeoMag('data/WMMHR.COF', high_resolution=True)
+    gm_hr = GeoMag("data/WMMHR.COF", high_resolution=True)
     print(f"Model: {gm_hr.model} (High Resolution, {gm_hr.maxord} degrees)")
 
     time = 2025.0
@@ -82,7 +84,7 @@ def main():
 
     result = gm.calculate(lat=47.6205, lon=-122.3493, alt=0.0, time=2025.5)
     print(f"Result object: {result}")
-    print(f"\nWarning zones:")
+    print("\nWarning zones:")
     print(f"  In blackout zone: {result.in_blackout_zone}")
     print(f"  In caution zone: {result.in_caution_zone}")
     print(f"  High resolution: {result.is_high_resolution}")
@@ -90,5 +92,5 @@ def main():
     print("\n=== All examples completed successfully! ===")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

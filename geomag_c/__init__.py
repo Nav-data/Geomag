@@ -18,6 +18,6 @@ Example:
 
 from .geomag import GeoMag, GeoMagResult, GeoMagUncertainty
 
-__version__ = '1.0.0'
-__author__ = 'Justin'
-__all__ = ['GeoMag', 'GeoMagResult', 'GeoMagUncertainty']
+__version__ = "1.0.0"
+__author__ = "Justin"
+__all__ = ["GeoMag", "GeoMagResult", "GeoMagUncertainty"]
